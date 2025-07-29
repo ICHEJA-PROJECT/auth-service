@@ -1,6 +1,6 @@
 export interface TokenPayloadI {
   id_persona: number;
-  username: string;
+  nombre: string;
   role_name: string;
   disability_name?: string;
   disability_id?: number;

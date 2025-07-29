@@ -142,9 +142,6 @@ public
 *.rdb
 *.dump
 
-# ---------------------- Docker files ------------------------------
-.dockerignore
-
 # ---------------------- Testing -----------------------------------
 /test/coverage
 /.nyc_output
