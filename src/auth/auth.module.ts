@@ -9,13 +9,12 @@ import {
   PersonaRepositoryImp,
   RolRepositoryImp,
   EncryptDataRepositoryImp,
-  QRRepositoryImp,
 } from './data/repositories';
-import { DisabilityModule } from 'src/disability/disability.module';
+import { PreferenceServiceTransport } from 'src/common/transports/preference-service.transport';
 
 @Module({
   imports: [
-    DisabilityModule,
+    PreferenceServiceTransport,
     JwtModule.register({
       global: true,
       secret: envsValues.JWT_SECRET,
@@ -29,14 +28,12 @@ import { DisabilityModule } from 'src/disability/disability.module';
     PersonaRepositoryImp,
     RolRepositoryImp,
     EncryptDataRepositoryImp,
-    QRRepositoryImp,
   ],
   exports: [
     AuthService,
     PersonaRepositoryImp,
     RolRepositoryImp,
     EncryptDataRepositoryImp,
-    QRRepositoryImp,
   ],
 })
 export class AuthModule {}

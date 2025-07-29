@@ -1,17 +1,15 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RpcException } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import {
   PersonaRepositoryI,
   RolRepositoryI,
   EncryptDataRepository,
-  QRRepository,
 } from '../domain/repositories';
 import {
   PersonaRepositoryImp,
   RolRepositoryImp,
   EncryptDataRepositoryImp,
-  QRRepositoryImp,
 } from '../data/repositories';
 import {
   LoginCredentialsDto,
@@ -23,8 +21,8 @@ import {
   ValidateTokenResponseAdapter,
 } from '../data/adapters';
 import { TokenPayloadI } from '../domain/entitiesI';
-import { StudentImpairmentRepositoryImp } from 'src/disability/data/repositories';
-import { StudentImpairmentRepositoryI } from 'src/disability/domain/repositories';
+import { catchError, firstValueFrom } from 'rxjs';
+import { PREFERENCES_SERVICE_OPTIONS } from 'src/preferences/domain/constants/preferences_service_options';
 
 @Injectable()
 export class AuthService {
@@ -38,10 +36,8 @@ export class AuthService {
     private readonly rolRepository: RolRepositoryI,
     @Inject(EncryptDataRepositoryImp)
     private readonly encryptDataRepository: EncryptDataRepository,
-    @Inject(QRRepositoryImp)
-    private readonly qrRepository: QRRepository,
-    @Inject(StudentImpairmentRepositoryImp)
-    private readonly studentImpairmentRepository: StudentImpairmentRepositoryI,
+    @Inject(PREFERENCES_SERVICE_OPTIONS.PREFERENCES_SERVICE_NAME)
+    private readonly client: ClientProxy,
   ) {}
 
   async loginWithCredentials(
@@ -81,10 +77,27 @@ export class AuthService {
       }
 
       // 4. Get disability information from external service
-      const impairmentInfo =
-        await this.studentImpairmentRepository.getStudentImpairmentDetails(
-          persona.id_persona,
-        );
+      const impairmentInfo = await firstValueFrom(
+        this.client
+          .send(
+            { cmd: PREFERENCES_SERVICE_OPTIONS.PREFERENCES_FIND_BY_STUDENT },
+            {
+              id: persona.id_persona,
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              console.log('Error en la petición:', error);
+              throw new RpcException({
+                status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+                message:
+                  error.message || 'Error en la petición AMPQ a findByStudent',
+                code: error.code || 'HTTP_ERROR',
+                details: error.response?.data || error,
+              });
+            }),
+          ),
+      );
 
       // 5. Create token payload
       const payload: TokenPayloadI = {
@@ -142,10 +155,27 @@ export class AuthService {
       }
 
       // 4. Get updated disability information from external service
-      const impairmentInfo =
-        await this.studentImpairmentRepository.getStudentImpairmentDetails(
-          persona.id_persona,
-        );
+      const impairmentInfo = await firstValueFrom(
+        this.client
+          .send(
+            { cmd: PREFERENCES_SERVICE_OPTIONS.PREFERENCES_FIND_BY_STUDENT },
+            {
+              id: persona.id_persona,
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              console.log('Error en la petición:', error);
+              throw new RpcException({
+                status: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+                message:
+                  error.message || 'Error en la petición AMPQ a findByStudent',
+                code: error.code || 'HTTP_ERROR',
+                details: error.response?.data || error,
+              });
+            }),
+          ),
+      );
 
       // 5. Create fresh token payload with updated information
       const payload: TokenPayloadI = {

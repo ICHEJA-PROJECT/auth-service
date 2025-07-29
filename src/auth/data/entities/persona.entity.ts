@@ -56,7 +56,7 @@ export class PersonaEntity implements PersonaI {
   @Column({ type: 'int', nullable: false })
   id_asentamiento_tipo: number;
 
-  @Column({ type: 'varchar', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 60, nullable: false })
   password: string;
 
   @OneToMany(() => PersonaRolEntity, (personaRol) => personaRol.persona)

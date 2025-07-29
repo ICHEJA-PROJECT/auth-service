@@ -8,5 +8,4 @@ export interface EnvsI {
   DB_USERNAME: string;
   DB_PASSWORD: string;
   BROKER_HOSTS: string[];
-  DISABILITY_SERVICE_URL: string;
 }

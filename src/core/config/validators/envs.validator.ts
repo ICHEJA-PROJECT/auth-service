@@ -24,7 +24,4 @@ export const envsValidator = Joi.object<EnvsI>({
     .items(Joi.string())
     .required()
     .description('The hosts of the message broker'),
-  DISABILITY_SERVICE_URL: Joi.string()
-    .required()
-    .description('The URL of the disability service'),
 }).unknown(true);
