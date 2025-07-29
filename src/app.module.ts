@@ -13,7 +13,7 @@ import { envsValues } from './core/config/getEnvs';
       password: envsValues.DB_PASSWORD,
       database: envsValues.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true, // Set to false in production
+      synchronize: false,
       logging: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
